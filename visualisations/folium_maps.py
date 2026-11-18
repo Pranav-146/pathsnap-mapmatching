@@ -31,7 +31,8 @@ def _route_arcs(per_point_arcs: np.ndarray) -> np.ndarray:
 
 
 def make_map(trip: dict, clf_arcs: np.ndarray | None = None, hmm_arcs: np.ndarray | None = None,
-             show_reference: bool = True, out_path: str | Path | None = None) -> folium.Map:
+             show_reference: bool = True, out_path: str | Path | None = None,
+             max_gps_markers: int = 1500) -> folium.Map:
     """Draw one trip.
 
     trip      dict from data_processing.load.load_trip
@@ -70,8 +71,9 @@ def make_map(trip: dict, clf_arcs: np.ndarray | None = None, hmm_arcs: np.ndarra
         g.add_to(m)
         legend.append((col, name))
 
-    g = folium.FeatureGroup(name=f"GPS points ({len(t)})")
-    for la, lo in zip(t.lat.to_numpy(), t.lon.to_numpy()):
+    step = max(1, int(np.ceil(len(t) / max_gps_markers)))      # keep the HTML light on very long trips
+    g = folium.FeatureGroup(name=f"GPS points ({len(t)}" + (f", every {step}th drawn)" if step > 1 else ")"))
+    for la, lo in zip(t.lat.to_numpy()[::step], t.lon.to_numpy()[::step]):
         folium.CircleMarker((float(la), float(lo)), radius=2, color="blue", weight=1, fill=True, fill_opacity=.8).add_to(g)
     g.add_to(m)
 
