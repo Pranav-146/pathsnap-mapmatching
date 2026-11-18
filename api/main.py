@@ -82,6 +82,29 @@ def trips():
     return {"trips": ids}
 
 
+@app.get("/benchmarks")
+def benchmarks():
+    """Development-stage comparison numbers read from results/ (student_test and CV on train; never the evaluator trips)."""
+    import pandas as pd
+    res_dir = Path(__file__).resolve().parents[1] / "results"
+    out: dict = {"pooled_top1": None, "models": []}
+    hc_path, mc_path = res_dir / "hmm_comparison.csv", res_dir / "model_comparison.csv"
+    if hc_path.exists():
+        hc = pd.read_csv(hc_path)
+        w = hc["n_label_valid"]
+        pooled = lambda c: float((hc[c] * w).sum() / w.sum())
+        out["pooled_top1"] = {"nearest_arc": pooled("top1_nearest_arc"), "classifier_only": pooled("top1_classifier_only"),
+                              "classifier_hmm": pooled("top1_classifier_hmm"), "hmm_distance_only": pooled("top1_hmm_distance_only")}
+    if mc_path.exists():
+        mc = pd.read_csv(mc_path).sort_values("cv_macro_f1_mean", ascending=False)
+        out["models"] = [{"Model": r.model, "Family": r.algorithm_family, "CV Macro F1": round(r.cv_macro_f1_mean, 4),
+                          "CV std": round(r.cv_macro_f1_std, 4), "Test Top-1": round(r.test_top1, 4),
+                          "Test log loss": round(r.test_log_loss, 4), "Inference (s)": round(r.inference_time_s, 3)}
+                         for r in mc.itertuples()]
+    log.info("GET /benchmarks")
+    return out
+
+
 def _predict_stub(trip_id: str) -> dict:
     trip = load_trip(EVAL_DIR / trip_id, validate=False)
     gps = trip["track"][["lat", "lon"]].to_numpy().tolist()
