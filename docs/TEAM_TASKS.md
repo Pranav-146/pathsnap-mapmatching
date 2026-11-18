@@ -5,6 +5,13 @@ pipeline, API, UI and the report builder exist in the repo. What is left is **ru
 whatever breaks on the first run, and assembling the final PDF. Each person below has a task that can start
 **right now** on their own laptop. Nobody needs to wait for anybody until the sync point (section 3).
 
+> **Update (read first).**
+> 1. **Optuna is already running on Pranav's machine** (40 trials, started 16:19). **P2: do not run it yourself.** P2's step 2 is done there; the outputs
+>    (`hpo_trials.csv`, plots, `artifacts/model.pkl`) will arrive on branch `p2/hpo-export`. P2's remaining job is steps 3 to 5: check the plots, read `sec_models`, and be able to explain the result.
+> 2. **Map tiles were changed to OpenStreetMap** (the CARTO basemap started showing an "API KEY REQUIRED" watermark). After the branch `fix/osm-tiles-qa` is merged,
+>    P3 and P4 must `git checkout develop ; git pull` **before** generating maps or screenshots, otherwise their maps and screenshots will carry the watermark.
+> 3. The P1 checks are done: a fresh clone reproduced the exact numbers, and the notebook, figures and section 2.2 are verified.
+
 > **Honest status.** These scripts were written and unit-checked, but have **not** been run end-to-end yet:
 > `hpo/optuna_search.py`, `visualisations/model_plots.py`, `hmm/tune_hmm.py`, `hmm/evaluate_hmm.py`,
 > `visualisations/hmm_plots.py`, `report/capture_screenshots.py`, and the section modules in `report/`.
