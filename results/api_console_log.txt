@@ -1,37 +1,84 @@
-INFO:     Started server process [97971]
+INFO:     Started server process [29976]
 INFO:     Waiting for application startup.
-2026-11-18 16:50:24,459 INFO starting: backend=pipeline EVAL_DIR=/Users/shyam/Documents/ML_Hackathon/Student folder/student_test
-2026-11-18 16:50:25,787 INFO model loaded once in 0.30s: hgb (tuned), 16 features; HMM params: {'sigma': 3.0, 'beta': 5.0, 'gap_T': 30.0, 'same_bonus': 1.0, 'adjacent_bonus': 0.5, 'disconnected_cap': 500.0, 'straight_mode': 'projected', 'emission_weight': 0.25}
+2026-11-18 17:46:47,366 INFO starting: backend=pipeline EVAL_DIR=D:\College\sem 5\ML\Hackathon\Student folder\Student folder\student_test
+2026-11-18 17:46:48,990 INFO model loaded once in 0.20s: hgb (tuned), 16 features; HMM params: {'sigma': 3.0, 'beta': 5.0, 'gap_T': 10.0, 'same_bonus': 0.0, 'adjacent_bonus': 0.0, 'disconnected_cap': 500.0, 'straight_mode': 'projected', 'emission_weight': 0.25}
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:52079 - "GET /health HTTP/1.1" 200 OK
-2026-11-18 16:50:26,740 INFO GET /trips -> 10 trips
-INFO:     127.0.0.1:52082 - "GET /trips HTTP/1.1" 200 OK
-2026-11-18 16:50:31,581 INFO GET /trips -> 10 trips
-INFO:     127.0.0.1:52115 - "GET /trips HTTP/1.1" 200 OK
-2026-11-18 16:50:32,168 INFO POST /predict trip=00000007 points=1354 inference=0.54s total=0.58s top1=1.0000 (classifier-only 0.9616) continuity=100.0% arcF1=0.992
-INFO:     127.0.0.1:52117 - "POST /predict HTTP/1.1" 200 OK
-2026-11-18 16:50:36,747 INFO GET /trips -> 10 trips
-INFO:     127.0.0.1:52149 - "GET /trips HTTP/1.1" 200 OK
-2026-11-18 16:50:36,818 INFO POST /predict trip=00000009 points=1049 inference=2.70s total=2.78s top1=0.9180 (classifier-only 0.8684) continuity=94.8% arcF1=0.887
-INFO:     127.0.0.1:52134 - "POST /predict HTTP/1.1" 200 OK
-2026-11-18 16:50:38,445 INFO POST /predict trip=00000040 points=2995 inference=1.44s total=1.69s top1=0.9776 (classifier-only 0.9205) continuity=99.6% arcF1=0.979
-INFO:     127.0.0.1:52151 - "POST /predict HTTP/1.1" 200 OK
-2026-11-18 16:50:42,199 INFO GET /trips -> 10 trips
-INFO:     127.0.0.1:52190 - "GET /trips HTTP/1.1" 200 OK
-2026-11-18 16:50:47,032 INFO POST /predict trip=00000056 points=3958 inference=4.27s total=4.82s top1=0.9678 (classifier-only 0.9026) continuity=96.7% arcF1=0.937
-INFO:     127.0.0.1:52192 - "POST /predict HTTP/1.1" 200 OK
-2026-11-18 16:50:47,787 INFO GET /trips -> 10 trips
-INFO:     127.0.0.1:52231 - "GET /trips HTTP/1.1" 200 OK
-2026-11-18 16:50:49,045 INFO POST /predict trip=00000065 points=768 inference=3.33s total=3.51s top1=0.8789 (classifier-only 0.8346) continuity=98.3% arcF1=0.947
-INFO:     127.0.0.1:52212 - "POST /predict HTTP/1.1" 200 OK
-2026-11-18 16:50:54,059 INFO GET /trips -> 10 trips
-INFO:     127.0.0.1:52270 - "GET /trips HTTP/1.1" 200 OK
-2026-11-18 16:50:54,369 INFO POST /predict trip=00000077 points=3911 inference=3.88s total=4.14s top1=0.8916 (classifier-only 0.6881) continuity=99.6% arcF1=0.963
-INFO:     127.0.0.1:52247 - "POST /predict HTTP/1.1" 200 OK
-INFO:     Shutting down
-2026-11-18 16:50:55,156 INFO POST /predict trip=00000091 points=874 inference=1.00s total=1.05s top1=0.9462 (classifier-only 0.8719) continuity=97.5% arcF1=0.861
-INFO:     127.0.0.1:52272 - "POST /predict HTTP/1.1" 200 OK
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [97971]
+INFO:     127.0.0.1:59284 - "GET /health HTTP/1.1" 200 OK
+2026-11-18 17:46:51,463 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:59290 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:47:00,018 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:50179 - "GET /trips HTTP/1.1" 200 OK
+C:\Users\sripr\AppData\Local\Programs\Python\Python312\Lib\site-packages\joblib\externals\loky\backend\context.py:136: UserWarning: Could not find the number of physical cores for the following reason:
+[WinError 2] The system cannot find the file specified
+Returning the number of logical cores instead. You can silence this warning by setting LOKY_MAX_CPU_COUNT to the number of cores you want to use.
+  warnings.warn(
+  File "C:\Users\sripr\AppData\Local\Programs\Python\Python312\Lib\site-packages\joblib\externals\loky\backend\context.py", line 257, in _count_physical_cores
+    cpu_info = subprocess.run(
+               ^^^^^^^^^^^^^^^
+  File "C:\Users\sripr\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sripr\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "C:\Users\sripr\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 1538, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-18 17:47:02,624 INFO POST /predict trip=00000000 points=2503 inference=0.47s total=0.55s top1=0.9592 (classifier-only 0.9453) continuity=99.6% arcF1=0.950
+INFO:     127.0.0.1:50182 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:47:04,695 INFO GET /benchmarks
+INFO:     127.0.0.1:61677 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:47:15,602 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:49955 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:47:17,953 INFO POST /predict trip=00000007 points=1354 inference=0.25s total=0.28s top1=1.0000 (classifier-only 0.9394) continuity=100.0% arcF1=0.992
+INFO:     127.0.0.1:64519 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:47:20,024 INFO GET /benchmarks
+INFO:     127.0.0.1:64521 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:47:30,887 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:60245 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:47:34,091 INFO POST /predict trip=00000009 points=1049 inference=1.09s total=1.15s top1=0.9199 (classifier-only 0.8684) continuity=94.5% arcF1=0.889
+INFO:     127.0.0.1:54586 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:47:36,144 INFO GET /benchmarks
+INFO:     127.0.0.1:55779 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:47:47,225 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:60825 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:47:50,003 INFO POST /predict trip=00000040 points=2995 inference=0.60s total=0.73s top1=0.9780 (classifier-only 0.9219) continuity=99.6% arcF1=0.977
+INFO:     127.0.0.1:55954 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:47:52,105 INFO GET /benchmarks
+INFO:     127.0.0.1:59054 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:48:02,302 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:55000 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:48:04,564 INFO POST /predict trip=00000052 points=262 inference=0.18s total=0.20s top1=0.9962 (classifier-only 0.9618) continuity=96.6% arcF1=0.933
+INFO:     127.0.0.1:64434 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:48:06,630 INFO GET /benchmarks
+INFO:     127.0.0.1:64437 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:48:16,666 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:60120 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:48:20,979 INFO POST /predict trip=00000056 points=3958 inference=1.84s total=2.24s top1=0.9678 (classifier-only 0.9036) continuity=96.7% arcF1=0.937
+INFO:     127.0.0.1:51489 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:48:23,119 INFO GET /benchmarks
+INFO:     127.0.0.1:63754 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:48:33,294 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:53881 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:48:36,091 INFO POST /predict trip=00000065 points=768 inference=0.71s total=0.75s top1=0.8750 (classifier-only 0.8320) continuity=98.3% arcF1=0.947
+INFO:     127.0.0.1:53884 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:48:38,159 INFO GET /benchmarks
+INFO:     127.0.0.1:55336 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:48:49,555 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:50979 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:48:54,979 INFO POST /predict trip=00000076 points=1486 inference=3.21s total=3.36s top1=0.9522 (classifier-only 0.8829) continuity=96.9% arcF1=0.885
+INFO:     127.0.0.1:50984 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:48:57,103 INFO GET /benchmarks
+INFO:     127.0.0.1:61439 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:49:08,575 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:57268 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:49:11,906 INFO POST /predict trip=00000077 points=3911 inference=1.16s total=1.28s top1=0.8041 (classifier-only 0.6952) continuity=99.6% arcF1=0.959
+INFO:     127.0.0.1:59909 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:49:13,992 INFO GET /benchmarks
+INFO:     127.0.0.1:64356 - "GET /benchmarks HTTP/1.1" 200 OK
+2026-11-18 17:49:24,018 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:54189 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 17:49:26,716 INFO POST /predict trip=00000091 points=874 inference=0.62s total=0.66s top1=0.9497 (classifier-only 0.8764) continuity=97.3% arcF1=0.874
+INFO:     127.0.0.1:57408 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 17:49:28,798 INFO GET /benchmarks
+INFO:     127.0.0.1:61623 - "GET /benchmarks HTTP/1.1" 200 OK

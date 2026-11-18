@@ -35,7 +35,9 @@ def build(story: list):
     story.append(P(f"Between consecutive points the transition score is exp(-|straight-line distance - road-network distance| / beta), in log space -|d<sub>straight</sub> - d<sub>road</sub>| / beta, plus a bonus when the arc stays the same "
                    f"(+{p['same_bonus']:g}) or moves to an adjacent arc (+{p['adjacent_bonus']:g}). The road distance is the shortest-path distance on the trip's road graph (networkx, arc lengths in metres, cached per source node) between the "
                    f"projected positions on the two arcs. The straight-line distance is measured {'between the two candidates' + chr(39) + ' projected points' if p['straight_mode'] == 'projected' else 'between the two raw GPS fixes'}; "
-                   f"beta = {p['beta']:g} m, widened in proportion to the time gap when two fixes are more than 1 s apart. The recurrence is written in log space with back-pointers.", BODY))
+                   f"beta = {p['beta']:g} m, widened in proportion to the time gap when two fixes are more than 1 s apart. The recurrence is written in log space with back-pointers."
+                   + (" The tuning set both bonuses to 0: with the final classifier the same-arc and adjacency information is already carried by its continuity features "
+                      "(connects_prev, connects_next, in_prev, in_next), so an extra bonus only double-counts it." if p["same_bonus"] == 0 and p["adjacent_bonus"] == 0 else ""), BODY))
     story.append(P("4. Missing candidates and large GPS gaps", H3))
     seg = hc.hmm_segments
     story.append(P(f"A point with no candidate in range is skipped by the decoder and takes the previous decoded arc (a point can only be right if the road is near it, so no state is invented). "
@@ -83,6 +85,15 @@ def build(story: list):
     else:
         txt += f" The smallest gain is on trip {small.trip_id} ({small.hmm_gain_top1:+.4f}); there the classifier alone was already strong, so the sequence constraint has little to correct."
     story.append(P(txt, BODY))
+    d_only, c_hmm = pooled("top1_hmm_distance_only"), pooled("top1_classifier_hmm")
+    h_d = float((hold["top1_hmm_distance_only"] * wh).sum() / wh.sum())
+    h_c = float((hold["top1_hmm_tuned_params"] * wh).sum() / wh.sum())
+    if d_only > c_hmm:
+        story.append(P(f"<b>Classifier emission vs distance-only emission.</b> On student_test the HMM with a distance-only emission scores {d_only:.4f}, above the final classifier + HMM "
+                       f"({c_hmm:.4f}). On the 12 held-out train trips the order is reversed ({h_c:.4f} for classifier + HMM against {h_d:.4f} for distance-only). "
+                       "So neither emission dominates on every partition. The classifier's context features (in_prev, in_next, dist_win5) already encode some of the sequence information "
+                       "the HMM adds, which is why the tuning chose a low emission weight. We keep the classifier emission because the brief asks the decoder to use the selected model's outputs, "
+                       "and because it is the better variant on trips that were not used to tune the decoder.", BODY))
     # sequence-level
     story.append(P(f"<b>Sequence level.</b> Treating the predicted arcs as a set and comparing it with the arcs of the .route, mean arc precision rises from {hc.arc_precision_classifier_only.mean():.3f} to {hc.arc_precision_classifier_hmm.mean():.3f}: "
                    f"the classifier alone scatters wrong arcs (look-alike streets, the reverse direction) that do not belong to the route and the decoder removes most of them; mean arc recall changes from "

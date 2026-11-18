@@ -2,9 +2,9 @@
  "params": {
   "sigma": 3.0,
   "beta": 5.0,
-  "gap_T": 30.0,
-  "same_bonus": 1.0,
-  "adjacent_bonus": 0.5,
+  "gap_T": 10.0,
+  "same_bonus": 0.0,
+  "adjacent_bonus": 0.0,
   "disconnected_cap": 500.0,
   "straight_mode": "projected",
   "emission_weight": 0.25
@@ -52,7 +52,7 @@
   "00000079"
  ],
  "objective": "pooled pointwise Top-1 on label-valid points",
- "tuning_top1_classifier_only": 0.8501518552753202,
- "tuning_top1_hmm_tuned": 0.934319292222369,
+ "tuning_top1_classifier_only": 0.8520797570315595,
+ "tuning_top1_hmm_tuned": 0.9315726924600555,
  "evaluator_trips_used": false
 }
