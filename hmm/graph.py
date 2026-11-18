@@ -60,6 +60,16 @@ class RoadGraph:
                     out[i, j] = tail + d + fb * g.arc_len[b]
         return out
 
+    def path_nodes(self, src: int, dst: int) -> list[int] | None:
+        """Node sequence of the shortest road path src -> dst within SP_CUTOFF metres, or None."""
+        if src == dst:
+            return [src]
+        try:
+            _, path = nx.single_source_dijkstra(self.G, src, target=dst, cutoff=SP_CUTOFF, weight="length")
+            return path
+        except (nx.NetworkXNoPath, KeyError):
+            return None
+
     def adjacency(self, arcs_a, arcs_b) -> np.ndarray:
         """1 where arc a flows directly into arc b (same arc counts), shape (len a, len b)."""
         g = self.geom
