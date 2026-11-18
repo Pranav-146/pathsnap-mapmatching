@@ -1,0 +1,27 @@
+# data - never commit raw trips or archives
+data/
+Student folder/
+*.zip
+*.7z
+*.rar
+*.mp4
+
+# secrets
+.env
+*.key
+*.pem
+
+# generated, regenerate with the scripts (see README)
+results/*.parquet
+artifacts/all_models/
+results/train_run*.log
+
+# python / notebooks / editors
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.vscode/
+.idea/
+.DS_Store
