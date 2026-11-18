@@ -33,7 +33,9 @@ SHOTS = REPO / "results" / "screenshots"
 API_PORT, UI_PORT = 8000, 8501
 BROWSERS = [r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
             r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-            r"C:\Program Files\Google\Chrome\Application\chrome.exe"]
+            r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
 
 
 def browser() -> str | None:
