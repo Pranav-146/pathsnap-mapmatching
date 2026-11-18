@@ -1,0 +1,35 @@
+{
+ "model": "hgb",
+ "variant": "untuned-interim",
+ "params": {
+  "max_iter": 200,
+  "learning_rate": 0.1
+ },
+ "random_state": 42,
+ "feature_cols": [
+  "dist",
+  "dist_rank",
+  "heading_diff",
+  "heading_valid",
+  "speed",
+  "arc_len",
+  "frac",
+  "connects_prev",
+  "n_cand",
+  "dt_prev",
+  "dist_to_best",
+  "in_prev",
+  "in_next",
+  "connects_next",
+  "dist_win5",
+  "turn_angle"
+ ],
+ "scaler": null,
+ "scaler_note": "not used: tree-based model",
+ "candidate_radius_m": 50.0,
+ "candidate_k": 8,
+ "emission": "predict_proba(X)[:, 1] normalised across each point's candidates",
+ "trained_on": "all 80 train trips, label_valid == 1 rows",
+ "n_train_rows": 1066564,
+ "note": "INTERIM export (untuned HistGradientBoosting from models/train_all.py) so the HMM, API and report stages can run before Optuna finishes. hpo/optuna_search.py overwrites this file and model.pkl."
+}
