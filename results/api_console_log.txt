@@ -1,0 +1,37 @@
+INFO:     Started server process [97971]
+INFO:     Waiting for application startup.
+2026-11-18 16:50:24,459 INFO starting: backend=pipeline EVAL_DIR=/Users/shyam/Documents/ML_Hackathon/Student folder/student_test
+2026-11-18 16:50:25,787 INFO model loaded once in 0.30s: hgb (tuned), 16 features; HMM params: {'sigma': 3.0, 'beta': 5.0, 'gap_T': 30.0, 'same_bonus': 1.0, 'adjacent_bonus': 0.5, 'disconnected_cap': 500.0, 'straight_mode': 'projected', 'emission_weight': 0.25}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52079 - "GET /health HTTP/1.1" 200 OK
+2026-11-18 16:50:26,740 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:52082 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 16:50:31,581 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:52115 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 16:50:32,168 INFO POST /predict trip=00000007 points=1354 inference=0.54s total=0.58s top1=1.0000 (classifier-only 0.9616) continuity=100.0% arcF1=0.992
+INFO:     127.0.0.1:52117 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 16:50:36,747 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:52149 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 16:50:36,818 INFO POST /predict trip=00000009 points=1049 inference=2.70s total=2.78s top1=0.9180 (classifier-only 0.8684) continuity=94.8% arcF1=0.887
+INFO:     127.0.0.1:52134 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 16:50:38,445 INFO POST /predict trip=00000040 points=2995 inference=1.44s total=1.69s top1=0.9776 (classifier-only 0.9205) continuity=99.6% arcF1=0.979
+INFO:     127.0.0.1:52151 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 16:50:42,199 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:52190 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 16:50:47,032 INFO POST /predict trip=00000056 points=3958 inference=4.27s total=4.82s top1=0.9678 (classifier-only 0.9026) continuity=96.7% arcF1=0.937
+INFO:     127.0.0.1:52192 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 16:50:47,787 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:52231 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 16:50:49,045 INFO POST /predict trip=00000065 points=768 inference=3.33s total=3.51s top1=0.8789 (classifier-only 0.8346) continuity=98.3% arcF1=0.947
+INFO:     127.0.0.1:52212 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 16:50:54,059 INFO GET /trips -> 10 trips
+INFO:     127.0.0.1:52270 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 16:50:54,369 INFO POST /predict trip=00000077 points=3911 inference=3.88s total=4.14s top1=0.8916 (classifier-only 0.6881) continuity=99.6% arcF1=0.963
+INFO:     127.0.0.1:52247 - "POST /predict HTTP/1.1" 200 OK
+INFO:     Shutting down
+2026-11-18 16:50:55,156 INFO POST /predict trip=00000091 points=874 inference=1.00s total=1.05s top1=0.9462 (classifier-only 0.8719) continuity=97.5% arcF1=0.861
+INFO:     127.0.0.1:52272 - "POST /predict HTTP/1.1" 200 OK
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [97971]

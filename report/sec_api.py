@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 
-from report.common import PAGE_W, RESULTS, H1, H2, P, SMALL, bullets, img, pb, sp, table
+from report.common import BODY, PAGE_W, RESULTS, H1, H2, P, SMALL, bullets, img, pb, sp, table
 
 LINE = re.compile(r"POST /predict trip=(\d+) points=(\d+) inference=([\d.]+)s total=([\d.]+)s top1=([\d.]+) \(classifier-only ([\d.]+)\) continuity=([\d.]+)% arcF1=([\d.]+)")
 
