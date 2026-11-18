@@ -78,7 +78,7 @@ if res:
                f"| server time {fmt(m.get('server_time_s'), '{:.2f} s')}")
 
     gps = res["gps_points"]
-    fmap = folium.Map(location=gps[len(gps) // 2], zoom_start=14, tiles="cartodbpositron")
+    fmap = folium.Map(location=gps[len(gps) // 2], zoom_start=14, tiles="OpenStreetMap")
     fmap.fit_bounds([[min(p[0] for p in gps), min(p[1] for p in gps)], [max(p[0] for p in gps), max(p[1] for p in gps)]])
     g = folium.FeatureGroup(name=f"GPS points ({len(gps)})")
     for lat, lon in gps[:: max(1, len(gps) // 1500)]:      # thin very long traces for browser speed
