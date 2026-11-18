@@ -42,7 +42,7 @@ def make_map(trip: dict, clf_arcs: np.ndarray | None = None, hmm_arcs: np.ndarra
     classifier-only route (orange), HMM route (red); legend and layer control.
     """
     t, nodes, arcs = trip["track"], trip["nodes"], trip["arcs"]
-    m = folium.Map(location=[float(t.lat.mean()), float(t.lon.mean())], zoom_start=14, tiles="cartodbpositron")
+    m = folium.Map(location=[float(t.lat.mean()), float(t.lon.mean())], zoom_start=14, tiles="OpenStreetMap")
     m.fit_bounds([[float(t.lat.min()), float(t.lon.min())], [float(t.lat.max()), float(t.lon.max())]])
 
     pad = 0.003
