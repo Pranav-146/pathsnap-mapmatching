@@ -77,6 +77,30 @@ if res:
                f"arc precision {fmt(m.get('arc_precision'), '{:.2%}')} | arc recall {fmt(m.get('arc_recall'), '{:.2%}')} "
                f"| server time {fmt(m.get('server_time_s'), '{:.2f} s')}")
 
+    # Baseline comparison summary expander
+    with st.expander("📊 Baseline & Model Comparison Benchmarks (Overall Evaluation)", expanded=False):
+        st.markdown("#### Baseline vs Model Pipeline Comparison on `student_test` (10 Trips Pooled)")
+        b1, b2, b3, b4 = st.columns(4)
+        b1.metric("Nearest Arc Baseline", "53.44%", help="Geometric Euclidean projection to nearest road arc")
+        b2.metric("Classifier-Only Baseline", "86.26%", help="Gradient boosted trees alone, no sequence decoder")
+        b3.metric("Classifier + HMM (Final)", "93.88%", "+7.62 pts vs Classifier", help="Viterbi HMM decoder with topological bonuses")
+        b4.metric("Distance-Only HMM", "94.07%", help="HMM using pure spatial emission without classifier features")
+        
+        st.markdown("---")
+        st.markdown("#### Classifier Family Benchmarks (5-Fold GroupKFold Cross-Validation)")
+        st.dataframe(
+            [
+                {"Rank": 1, "Model": "HistGradientBoosting (Selected)", "CV Macro F1": "90.48% (±2.4%)", "Test Top-1": "86.27%", "Inference Latency": "0.09 s", "Why Chosen": "Optimal balance of accuracy, low ECE (0.005), and 3x faster inference than RF"},
+                {"Rank": 2, "Model": "Random Forest", "CV Macro F1": "90.59% (±2.4%)", "Test Top-1": "86.63%", "Inference Latency": "0.26 s", "Why Chosen": "Slightly higher raw F1 but 3x slower inference and much larger artifact size"},
+                {"Rank": 3, "Model": "Multilayer Perceptron (MLP)", "CV Macro F1": "90.28% (±2.5%)", "Test Top-1": "86.44%", "Inference Latency": "0.08 s", "Why Chosen": "Competitive but required 275s train time and complex scaling"},
+                {"Rank": 4, "Model": "KNN (k=15)", "CV Macro F1": "89.18% (±2.2%)", "Test Top-1": "85.16%", "Inference Latency": "7.72 s", "Why Chosen": "Severely unviable inference latency (85x slower than HGB)"},
+                {"Rank": 5, "Model": "Logistic Regression", "CV Macro F1": "88.51% (±2.2%)", "Test Top-1": "85.11%", "Inference Latency": "0.02 s", "Why Chosen": "Fast linear baseline but underfits non-linear spatial interactions"},
+                {"Rank": 6, "Model": "Gaussian Naive Bayes", "CV Macro F1": "75.93% (±1.3%)", "Test Top-1": "82.20%", "Inference Latency": "0.05 s", "Why Chosen": "Violates independence assumptions among spatial/heading features"},
+            ],
+            use_container_width=True,
+            hide_index=True
+        )
+
     gps = res["gps_points"]
     fmap = folium.Map(location=gps[len(gps) // 2], zoom_start=14, tiles="OpenStreetMap")
     fmap.fit_bounds([[min(p[0] for p in gps), min(p[1] for p in gps)], [max(p[0] for p in gps), max(p[1] for p in gps)]])
