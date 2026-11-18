@@ -25,3 +25,7 @@ venv/
 .vscode/
 .idea/
 .DS_Store
+
+# logs
+results/*.log
+report/_test_*.pdf
