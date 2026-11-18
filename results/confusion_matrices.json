@@ -1,0 +1,80 @@
+{
+ "logreg": {
+  "matrix_tn_fp_fn_tp": [
+   [
+    91504,
+    3013
+   ],
+   [
+    3550,
+    15534
+   ]
+  ],
+  "partition": "student_test"
+ },
+ "gnb": {
+  "matrix_tn_fp_fn_tp": [
+   [
+    75674,
+    18843
+   ],
+   [
+    1540,
+    17544
+   ]
+  ],
+  "partition": "student_test"
+ },
+ "hgb": {
+  "matrix_tn_fp_fn_tp": [
+   [
+    91948,
+    2569
+   ],
+   [
+    2812,
+    16272
+   ]
+  ],
+  "partition": "student_test"
+ },
+ "rf": {
+  "matrix_tn_fp_fn_tp": [
+   [
+    92312,
+    2205
+   ],
+   [
+    3028,
+    16056
+   ]
+  ],
+  "partition": "student_test"
+ },
+ "mlp": {
+  "matrix_tn_fp_fn_tp": [
+   [
+    92185,
+    2332
+   ],
+   [
+    3042,
+    16042
+   ]
+  ],
+  "partition": "student_test"
+ },
+ "knn": {
+  "matrix_tn_fp_fn_tp": [
+   [
+    91909,
+    2608
+   ],
+   [
+    3382,
+    15702
+   ]
+  ],
+  "partition": "student_test"
+ }
+}

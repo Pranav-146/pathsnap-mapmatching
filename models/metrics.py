@@ -27,7 +27,7 @@ from contextlib import contextmanager
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import f1_score, log_loss
+from sklearn.metrics import confusion_matrix, f1_score, log_loss, precision_score, recall_score
 
 KEYS = ["trip_id", "obs_idx"]
 
@@ -51,6 +51,38 @@ def macro_f1(y_true, score, threshold: float = 0.5) -> float:
 
 def binary_log_loss(y_true, score, eps: float = 1e-15) -> float:
     return float(log_loss(y_true, np.clip(np.asarray(score, dtype=float), eps, 1 - eps), labels=[0, 1]))
+
+
+def precision_recall(y_true, score, threshold: float = 0.5) -> tuple[float, float]:
+    """Precision and recall of the positive class (the reference arc) at `threshold`."""
+    pred = (np.asarray(score) >= threshold).astype(int)
+    return (float(precision_score(y_true, pred, zero_division=0)),
+            float(recall_score(y_true, pred, zero_division=0)))
+
+
+def confusion(y_true, score, threshold: float = 0.5) -> list[list[int]]:
+    """[[TN, FP], [FN, TP]] on the binary candidate labels."""
+    pred = (np.asarray(score) >= threshold).astype(int)
+    return confusion_matrix(y_true, pred, labels=[0, 1]).tolist()
+
+
+def brier(y_true, score) -> float:
+    return float(np.mean((np.asarray(score, dtype=float) - np.asarray(y_true, dtype=float)) ** 2))
+
+
+def expected_calibration_error(y_true, score, bins: int = 10) -> float:
+    """Mean |observed positive rate - mean predicted probability| over equal-width bins.
+
+    Low values mean the scores behave like probabilities, which is what the HMM emission needs.
+    """
+    y, p = np.asarray(y_true, dtype=float), np.asarray(score, dtype=float)
+    idx = np.minimum((p * bins).astype(int), bins - 1)
+    ece = 0.0
+    for b in range(bins):
+        m = idx == b
+        if m.any():
+            ece += m.mean() * abs(y[m].mean() - p[m].mean())
+    return float(ece)
 
 
 def candidate_miss_rate(points: pd.DataFrame, cands: pd.DataFrame) -> float:
@@ -93,10 +125,14 @@ def evaluate_scores(cands: pd.DataFrame, points: pd.DataFrame | None = None,
     """
     c = cands[cands["label_valid"] == 1]
     n_points = int((points["label_valid"] == 1).sum()) if points is not None else None
+    prec, rec = precision_recall(c["label"], c[score_col])
     out = {
         "top1": top1_accuracy(c, score_col, n_points),
         "macro_f1": macro_f1(c["label"], c[score_col]),
+        "precision": prec, "recall": rec,
         "log_loss": binary_log_loss(c["label"], c[score_col]),
+        "brier": brier(c["label"], c[score_col]),
+        "ece": expected_calibration_error(c["label"], c[score_col]),
     }
     if points is not None:
         out["miss_rate"] = candidate_miss_rate(points, c)
