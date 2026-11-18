@@ -2,11 +2,11 @@
  "model": "hgb",
  "variant": "tuned",
  "params": {
-  "learning_rate": 0.05514718587869894,
-  "max_iter": 500,
-  "max_leaf_nodes": 97,
-  "min_samples_leaf": 188,
-  "l2_regularization": 0.004207988669606638,
+  "learning_rate": 0.03039766083021771,
+  "max_iter": 250,
+  "max_leaf_nodes": 68,
+  "min_samples_leaf": 133,
+  "l2_regularization": 0.0201323075299375,
   "max_depth": 10
  },
  "random_state": 42,
