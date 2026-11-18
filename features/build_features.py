@@ -25,6 +25,17 @@ connects_prev 1 if the candidate is the previous point's nearest arc or starts w
               ends. Encodes route continuity before the HMM is even applied.
 n_cand        Number of candidates for the point (a crowded junction vs a lone road).
 dt_prev       Time gap to the previous point (s). Large gaps make speed/continuity weak.
+
+Feature v2 (context features, added after the v1 error analysis: wrong picks were mostly
+look-alike arcs that a single point cannot tell apart, e.g. the reverse arc of a two-way road
+or a parallel street; neighbouring points can)
+dist_to_best  dist minus the smallest dist among the point's candidates (0 for the nearest).
+in_prev       1 if the same arc is also a candidate of the previous point.
+in_next       1 if the same arc is also a candidate of the next point.
+connects_next 1 if the candidate flows into (or is) the nearest arc of the next point.
+dist_win5     mean dist of this arc over the 5 points around it (a missing point counts as R).
+turn_angle    GPS turning angle (0-180 deg) at the point; high values mark junctions.
+No labels are used by any of these, so they are available at inference time.
 """
 from __future__ import annotations
 
@@ -41,8 +52,10 @@ from data_processing.load import DATA_ROOT, REPO_ROOT, list_trips, load_trip  # 
 from features.candidates import (K_DEFAULT, R_DEFAULT, R_MAX, TripGeometry,  # noqa: E402
                                  find_candidates)
 
-FEATURE_COLS = ["dist", "dist_rank", "heading_diff", "heading_valid", "speed",
-                "arc_len", "frac", "connects_prev", "n_cand", "dt_prev"]
+FEATURE_COLS_V1 = ["dist", "dist_rank", "heading_diff", "heading_valid", "speed",
+                   "arc_len", "frac", "connects_prev", "n_cand", "dt_prev"]
+FEATURE_COLS_V2_NEW = ["dist_to_best", "in_prev", "in_next", "connects_next", "dist_win5", "turn_angle"]
+FEATURE_COLS = FEATURE_COLS_V1 + FEATURE_COLS_V2_NEW
 META_COLS = ["trip_id", "obs_idx", "t", "lon", "lat", "arc_id"]
 # extra geometry carried for the HMM; NOT model inputs (qx,qy are local metres)
 GEOM_COLS = ["qx", "qy"]
@@ -52,7 +65,7 @@ RESULTS = REPO_ROOT / "results"
 
 
 def gps_motion(track_xy: np.ndarray, t: np.ndarray):
-    """Per-point GPS heading (deg), heading validity, speed (m/s) and time gap to previous point."""
+    """Per-point GPS heading (deg), heading validity, speed (m/s), time gap to previous point and turning angle."""
     n = len(track_xy)
     prev_i = np.maximum(np.arange(n) - 1, 0)
     next_i = np.minimum(np.arange(n) + 1, n - 1)
@@ -67,7 +80,14 @@ def gps_motion(track_xy: np.ndarray, t: np.ndarray):
     speed[0] = speed[1] if n > 1 else 0.0
     dt_prev = np.ones(n)
     dt_prev[1:] = dt
-    return heading, valid, speed, dt_prev
+    # turning angle at each point: bearing(i-1 -> i) vs bearing(i -> i+1)
+    step_v = np.vstack([np.zeros((1, 2)), track_xy[1:] - track_xy[:-1]])           # step arriving at i
+    step_n = np.vstack([track_xy[1:] - track_xy[:-1], np.zeros((1, 2))])           # step leaving i
+    b_in = (np.degrees(np.arctan2(step_v[:, 0], step_v[:, 1])) + 360.0) % 360.0
+    b_out = (np.degrees(np.arctan2(step_n[:, 0], step_n[:, 1])) + 360.0) % 360.0
+    ok = (np.hypot(*step_v.T) >= MIN_MOVE_M) & (np.hypot(*step_n.T) >= MIN_MOVE_M)
+    turn = np.where(ok, _angle_diff(b_in, b_out), 0.0)
+    return heading, valid, speed, dt_prev, turn
 
 
 def _angle_diff(a, b):
@@ -92,7 +112,7 @@ def candidates_for_trip(track: pd.DataFrame, nodes: pd.DataFrame, arcs: pd.DataF
         c = _cands[(_cands["dist"] <= radius) & (_cands["dist_rank"] < k)].reset_index(drop=True)
 
     t = track["t"].to_numpy()
-    heading, valid, speed, dt_prev = gps_motion(geom.track_xy, t)
+    heading, valid, speed, dt_prev, turn = gps_motion(geom.track_xy, t)
     oi = c["obs_idx"].to_numpy()
     ai = c["arc_id"].to_numpy()
 
@@ -104,6 +124,11 @@ def candidates_for_trip(track: pd.DataFrame, nodes: pd.DataFrame, arcs: pd.DataF
     has_prev = pb >= 0
     pb_safe = np.where(has_prev, pb, 0)
     connects = has_prev & ((ai == pb) | (geom.from_node[ai] == geom.to_node[pb_safe]))
+    # next point's nearest arc -> look-ahead connectivity
+    nb = np.where(oi < len(track) - 1, prev_best[np.minimum(oi + 1, len(track) - 1)], -1)
+    has_next = nb >= 0
+    nb_safe = np.where(has_next, nb, 0)
+    connects_next = has_next & ((ai == nb) | (geom.to_node[ai] == geom.from_node[nb_safe]))
 
     out = pd.DataFrame({
         "trip_id": trip_id,
@@ -125,6 +150,19 @@ def candidates_for_trip(track: pd.DataFrame, nodes: pd.DataFrame, arcs: pd.DataF
         "qx": c["qx"].to_numpy(),
         "qy": c["qy"].to_numpy(),
     })
+    out["dist_to_best"] = out["dist"] - out.groupby("obs_idx")["dist"].transform("min")
+    out["connects_next"] = connects_next.astype(np.int8)
+    out["turn_angle"] = turn[oi]
+    # same arc among the candidates of neighbouring points (offsets -2..+2)
+    base = out[["obs_idx", "arc_id", "dist"]]
+    near = {}
+    for off in (-2, -1, 1, 2):
+        other = base.assign(obs_idx=base["obs_idx"] - off).rename(columns={"dist": "d"})
+        near[off] = out[["obs_idx", "arc_id"]].merge(other, on=["obs_idx", "arc_id"], how="left")["d"].to_numpy()
+    out["in_prev"] = (~np.isnan(near[-1])).astype(np.int8)
+    out["in_next"] = (~np.isnan(near[1])).astype(np.int8)
+    win = out["dist"].to_numpy() + sum(np.where(np.isnan(v), radius, v) for v in near.values())
+    out["dist_win5"] = win / 5.0
     return (out, geom) if return_geometry else out
 
 
@@ -177,7 +215,8 @@ def build_partition(name: str, out_name: str, radius: float = R_DEFAULT, k: int 
         print(f"[{name}] {i + 1}/{len(trips)} trip {p.name}: {len(pts)} pts, {len(c)} candidate rows", flush=True)
     cands = pd.concat(cand_parts, ignore_index=True)
     points = pd.concat(point_parts, ignore_index=True)
-    for col in ["dist", "heading_diff", "speed", "arc_len", "frac", "dt_prev", "qx", "qy"]:
+    for col in ["dist", "heading_diff", "speed", "arc_len", "frac", "dt_prev", "qx", "qy",
+                "dist_to_best", "dist_win5", "turn_angle"]:
         cands[col] = cands[col].astype("float32")
     RESULTS.mkdir(exist_ok=True, parents=True)
     cands.to_parquet(RESULTS / f"candidates_{out_name}.parquet", index=False)

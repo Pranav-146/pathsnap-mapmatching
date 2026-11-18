@@ -1,15 +1,17 @@
 # Feature notes (P1)
 
 One row per (GPS point, candidate arc). Candidates: arcs within R = 50 m of the point, at most the
-k = 8 nearest. Distances are metres in a per-trip local projection. Model inputs are the first ten
-columns below; `qx`, `qy` (projected point on the arc, local metres) are kept only for the HMM.
+k = 8 nearest. Distances are metres in a per-trip local projection. Model inputs are the 16 features below;
+`qx`, `qy` (projected point on the arc, local metres) are kept only for the HMM and are never model inputs.
+
+## v1 features
 
 | Feature | What it is | Why it is there |
 |---|---|---|
 | `dist` | perpendicular distance point to arc (m) | the strongest single cue; the true arc is usually the closest |
 | `dist_rank` | rank of `dist` among the point's candidates (0 = nearest) | relative, so robust when GPS noise differs between trips |
 | `heading_diff` | angle between GPS travel direction and arc bearing, 0-180 deg | separates the two directions of a two-way road and perpendicular side streets |
-| `heading_valid` | 0 when the vehicle moved < 1 m around the point | heading is meaningless when stationary (heading_diff is set to a neutral 90 deg) |
+| `heading_valid` | 0 when the vehicle moved < 1 m around the point | heading is meaningless when stationary (heading_diff is then a neutral 90 deg) |
 | `speed` | GPS speed (m/s) from consecutive points | slow speed = noisy heading / junction; high speed = highways |
 | `arc_len` | arc length (m) | short arcs are junction fragments, long arcs are straight road |
 | `frac` | position of the projection along the arc (0-1) | points near 0 or 1 are ambiguous between an arc and its neighbour |
@@ -17,9 +19,25 @@ columns below; `qx`, `qy` (projected point on the arc, local metres) are kept on
 | `n_cand` | number of candidates for the point | crowded junction vs a lone road |
 | `dt_prev` | time gap to the previous point (s) | large gaps weaken speed and continuity cues |
 
-Extra columns: `label` (1 = the point's reference arc), `label_valid` (0 when the reference arc is more
-than 100 m from the point, i.e. the `.route` does not cover that part of the track; fit and evaluate on
-`label_valid == 1` only).
+## v2 features (added after the v1 error analysis)
+
+The wrong picks of the v1 models were mostly look-alike arcs that one point cannot tell apart (the reverse
+arc of a two-way road, a parallel street). Neighbouring points can. None of these uses a label, so all are
+available at inference time.
+
+| Feature | What it is | Why it is there |
+|---|---|---|
+| `dist_to_best` | `dist` minus the smallest `dist` among the point's candidates | how much worse than the nearest arc this candidate is |
+| `in_prev`, `in_next` | the same arc is also a candidate of the previous / next point | a real road stays near the track for several points |
+| `connects_next` | candidate flows into (or is) the nearest arc of the next point | look-ahead continuity |
+| `dist_win5` | mean `dist` of this arc over the 5 points around it (a missing point counts as R) | smooths GPS noise per arc |
+| `turn_angle` | GPS turning angle at the point (0-180 deg) | marks junctions, where distance is least reliable |
+
+Effect (same HistGradientBoosting, `results/feature_v2_ablation.csv`): CV Macro F1 0.8990 to 0.9048,
+CV Top-1 0.8286 to 0.8390, student_test Top-1 0.8527 to 0.8627, student_test log loss 0.1311 to 0.1174.
+
+Other columns: `label` (1 = the point's reference arc), `label_valid` (0 when the reference arc is more than 100 m
+from the point, i.e. the `.route` does not cover that part of the track; fit and evaluate on `label_valid == 1` only).
 
 ## Deviations from the plan, and why
 
