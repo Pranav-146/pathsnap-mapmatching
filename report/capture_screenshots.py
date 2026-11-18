@@ -53,6 +53,40 @@ def shot(url: str, out: Path, size="1500,1000", budget=40000):
     return out.exists()
 
 
+def ui_shot(url: str, out: Path, wait_text="Top-1 accuracy", timeout=240) -> bool:
+    """Screenshot of the Streamlit UI AFTER it has rendered the prediction.
+
+    A plain headless --screenshot fires before Streamlit's websocket has delivered the page (it captures
+    the grey loading skeleton), so the UI is driven with Selenium and we wait for the metric cards.
+    Falls back to the plain screenshot if Selenium or a driver is unavailable.
+    """
+    try:
+        from selenium import webdriver
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+    except ImportError:
+        return shot(url, out)
+    drv = None
+    try:
+        try:
+            o = webdriver.EdgeOptions(); o.add_argument("--headless=new"); o.add_argument("--window-size=1500,1150")
+            drv = webdriver.Edge(options=o)
+        except Exception:
+            o = webdriver.ChromeOptions(); o.add_argument("--headless=new"); o.add_argument("--window-size=1500,1150")
+            drv = webdriver.Chrome(options=o)
+        drv.get(url)
+        WebDriverWait(drv, timeout).until(lambda d: wait_text in d.find_element(By.TAG_NAME, "body").text)
+        time.sleep(6)                      # let the map tiles and the route layers finish drawing
+        drv.save_screenshot(str(out))
+        return out.exists()
+    except Exception as e:
+        print("selenium screenshot failed:", e)
+        return False
+    finally:
+        if drv is not None:
+            drv.quit()
+
+
 def wait(url, tries=60):
     for _ in range(tries):
         try:
@@ -91,7 +125,7 @@ def main():
             trips = requests.get(f"http://localhost:{API_PORT}/trips").json()["trips"]
             for t in trips:
                 out = SHOTS / f"ui_{t}.png"
-                ok = shot(f"http://localhost:{UI_PORT}/?trip={t}&run=1&api=http://localhost:{API_PORT}", out)
+                ok = ui_shot(f"http://localhost:{UI_PORT}/?trip={t}&run=1&api=http://localhost:{API_PORT}", out)
                 print("UI screenshot", t, "ok" if ok else "FAILED", flush=True)
         finally:
             for p in (ui, api):
